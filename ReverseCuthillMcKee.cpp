@@ -39,15 +39,11 @@ class ReorderingSSM
 
 	public:
 	// Constructor and Destructor
-	ReorderingSSM(vector<vector<double> > m, int num_rows, int ne,string filein)
+	ReorderingSSM(vector<vector<int>> edges,int num_rows, int ne,string filein)
 	{
 
-		_matrix = m;
-		vector<int> inc;
-		vector<vector<int>> edges;
-		int j1=0, j2=0;
-
-		
+		//_matrix = m;
+		int j1, j2;
 
 		for (int i = 0; i < num_rows; i++) {
 			vector<double> datai;
@@ -57,22 +53,13 @@ class ReorderingSSM
 	
 			_matrix.push_back(datai);
 		}
-		ifstream myfile;
-		myfile.open(filein);
-		if (myfile.is_open()) 
-		{
-			for (int i = 0; i < ne; i++) 
-			{
-
-				myfile >> j1>>j2;
-			//edges.push_back(inc);
-				_matrix[j1][j2] = 1;
-				_matrix[j2][j1] = 1;
-			}
-			myfile.close();
+		for (int i = 0; i < ne; i++) {
+			j1 = edges[i][0];
+			j2 = edges[i][1];
+			_matrix[j1][j2] = 1;
+			_matrix[j2][j1] = 1;
 		}
-		else
-			cout << "File not Found" << endl;
+
 	}
 
 	ReorderingSSM() {}
@@ -175,11 +162,37 @@ class ReorderingSSM
 
 int main()
 {
-	std::cout << "Hello CuthillMcKee!\n";
 
-	int num_rows = 10,ne=14;
+	string filein;
+	int num_rows = 10, ne = 14;
+	int j1 = 0, j2 = 0;
+	std::cout << "Enter File Name!\n";
+	cin >> filein ;
+	ifstream myfile;
+	myfile.open(filein);
+	if (myfile.is_open())
+	{
+		for (int i = 0; i < ne; i++)
+		{
 
-	vector<vector<double> > matrix;
+			myfile >> j1 >> j2;
+			vector<int> inc;
+			inc.push_back(j1);
+			inc.push_back(j2);
+			edges.push_back(inc);
+
+		}
+		myfile.close();
+	}
+	else
+	{
+		cout << "File not Found" << endl;
+		return -1;
+	}
+
+
+
+	//vector<vector<double> > matrix;
 
 	//for (int i = 0; i < num_rows; i++) {
 	//	vector<double> datai;
@@ -203,7 +216,7 @@ int main()
 	//matrix[8] = { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0 };
 	//matrix[9] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
 
-	ReorderingSSM m(matrix,num_rows,ne,"test.txt");
+	ReorderingSSM m(edges,num_rows,ne,"test.txt");
 
 	vector<int> r = m.ReverseCuthillMckee();
 
@@ -212,13 +225,3 @@ int main()
 	return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started:
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
