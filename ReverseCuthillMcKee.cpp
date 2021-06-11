@@ -1,13 +1,16 @@
-// ReverseCuthillMcKee.cpp : This file contains the 'main' function. Program execution begins and ends there.
-// C++ program for Implementation of
-// Reverse Cuthill Mckee Algorithm
+// ReverseCuthillMcKee.cpp : This file contains the 'main' function. Program execution begins and
+// ends there. C++ program for Implementation of Reverse Cuthill Mckee Algorithm
 #include <iostream>
 #include <stdio.h>
-
+#include <fstream>
 #include <vector>
 #include <queue>
+#include <string>
+
 using namespace std;
 vector<double> globalDegree;
+int ne = 0;
+vector<vector<int>> edges;
 int findIndex(vector<pair<int, double> > a, int x)
 {
 	for (int i = 0; i < a.size(); i++)
@@ -29,15 +32,47 @@ ostream& operator<<(ostream& out, vector<T> const& v)
 	return out;
 }
 
-class ReorderingSSM {
-private:
-	vector<vector<double> > _matrix;
+class ReorderingSSM 
+{
+	private:
+		vector<vector<double> > _matrix;
 
-public:
+	public:
 	// Constructor and Destructor
-	ReorderingSSM(vector<vector<double> > m)
+	ReorderingSSM(vector<vector<double> > m, int num_rows, int ne,string filein)
 	{
+
 		_matrix = m;
+		vector<int> inc;
+		vector<vector<int>> edges;
+		int j1=0, j2=0;
+
+		
+
+		for (int i = 0; i < num_rows; i++) {
+			vector<double> datai;
+
+			for (int j = 0; j < num_rows; j++)
+				datai.push_back(0.0);
+	
+			_matrix.push_back(datai);
+		}
+		ifstream myfile;
+		myfile.open(filein);
+		if (myfile.is_open()) 
+		{
+			for (int i = 0; i < ne; i++) 
+			{
+
+				myfile >> j1>>j2;
+			//edges.push_back(inc);
+				_matrix[j1][j2] = 1;
+				_matrix[j2][j1] = 1;
+			}
+			myfile.close();
+		}
+		else
+			cout << "File not Found" << endl;
 	}
 
 	ReorderingSSM() {}
@@ -76,8 +111,7 @@ public:
 		for (int i = 0; i < degrees.size(); i++)
 			notVisited.push_back(make_pair(i, degrees[i]));
 
-		// Vector notVisited helps in running BFS
-		// even when there are dijoind graphs
+		// Vector notVisited helps in running BFS even when there are disjoind graphs
 		while (notVisited.size()) {
 			int minNodeIndex = 0;
 
@@ -143,33 +177,33 @@ int main()
 {
 	std::cout << "Hello CuthillMcKee!\n";
 
-	int num_rows = 10;
+	int num_rows = 10,ne=14;
 
 	vector<vector<double> > matrix;
 
-	for (int i = 0; i < num_rows; i++) {
-		vector<double> datai;
+	//for (int i = 0; i < num_rows; i++) {
+	//	vector<double> datai;
 
-		for (int j = 0; j < num_rows; j++)
-			datai.push_back(0.0);
+	//	for (int j = 0; j < num_rows; j++)
+	//		datai.push_back(0.0);
 
-		matrix.push_back(datai);
-	}
+	//	matrix.push_back(datai);
+	//}
 
 	// This is the test graph,
 	// check out the above graph photo
-	matrix[0] = { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 };
-	matrix[1] = { 1, 0, 0, 0, 1, 0, 1, 0, 0, 1 };
-	matrix[2] = { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 };
-	matrix[3] = { 0, 0, 0, 0, 1, 1, 0, 0, 1, 0 };
-	matrix[4] = { 0, 1, 1, 1, 0, 1, 0, 0, 0, 1 };
-	matrix[5] = { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 };
-	matrix[6] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
-	matrix[7] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 };
-	matrix[8] = { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0 };
-	matrix[9] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
+	//matrix[0] = { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 };
+	//matrix[1] = { 1, 0, 0, 0, 1, 0, 1, 0, 0, 1 };
+	//matrix[2] = { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 };
+	//matrix[3] = { 0, 0, 0, 0, 1, 1, 0, 0, 1, 0 };
+	//matrix[4] = { 0, 1, 1, 1, 0, 1, 0, 0, 0, 1 };
+	//matrix[5] = { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 };
+	//matrix[6] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
+	//matrix[7] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 };
+	//matrix[8] = { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0 };
+	//matrix[9] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
 
-	ReorderingSSM m(matrix);
+	ReorderingSSM m(matrix,num_rows,ne,"test.txt");
 
 	vector<int> r = m.ReverseCuthillMckee();
 
