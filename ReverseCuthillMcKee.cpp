@@ -233,7 +233,7 @@ int main()
 	cout << edges;
 	cout << "New Edges" << endl;
 	int band = 0;
-	int diff;
+	int diff=0;
 	for (int i = 0; i < edges.size(); i++) {
 
 		j1 = edges[i][0];
