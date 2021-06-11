@@ -32,6 +32,14 @@ ostream& operator<<(ostream& out, vector<T> const& v)
 	return out;
 }
 
+template <typename T>
+ostream& operator<<(ostream& out, vector<vector<T>> const& v)
+{
+	for (int i = 0; i < v.size(); i++)
+		out << v[i][0] << ' '<<v[i][1]<<endl;
+	return out;
+}
+
 class ReorderingSSM 
 {
 	private:
@@ -39,12 +47,12 @@ class ReorderingSSM
 
 	public:
 	// Constructor and Destructor
-	ReorderingSSM(vector<vector<int>> edges,int num_rows, int ne,string filein)
+	ReorderingSSM(vector<vector<int>> edges,int num_rows)
 	{
 
 		//_matrix = m;
 		int j1, j2;
-
+		//int ne1 = edges.size();
 		for (int i = 0; i < num_rows; i++) {
 			vector<double> datai;
 
@@ -53,7 +61,7 @@ class ReorderingSSM
 	
 			_matrix.push_back(datai);
 		}
-		for (int i = 0; i < ne; i++) {
+		for (int i = 0; i < edges.size(); i++) {
 			j1 = edges[i][0];
 			j2 = edges[i][1];
 			_matrix[j1][j2] = 1;
@@ -209,19 +217,33 @@ int main()
 	//matrix[1] = { 1, 0, 0, 0, 1, 0, 1, 0, 0, 1 };
 	//matrix[2] = { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 };
 	//matrix[3] = { 0, 0, 0, 0, 1, 1, 0, 0, 1, 0 };
-	//matrix[4] = { 0, 1, 1, 1, 0, 1, 0, 0, 0, 1 };
+	//matrix[4] = { 0, 0, 0, 0, 1, 1, 0, 0, 1, 0 };
 	//matrix[5] = { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 };
 	//matrix[6] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
 	//matrix[7] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 };
 	//matrix[8] = { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0 };
 	//matrix[9] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
 
-	ReorderingSSM m(edges,num_rows,ne,"test.txt");
+	ReorderingSSM m(edges,num_rows);
 
 	vector<int> r = m.ReverseCuthillMckee();
-
+	int r0; int r1;
 	cout << "Permutation order of objects: " << r << endl;
+	cout << "Original Edges" << endl;
+	cout << edges;
+	cout << "New Edges" << endl;
+	int band = 0;
+	int diff;
+	for (int i = 0; i < edges.size(); i++) {
 
+		j1 = edges[i][0];
+		j2 = edges[i][1];
+		r0 = r[j1]; r1 = r[j2];
+		diff = abs(r0 - r1);
+		if (diff > band) band = diff;
+		cout << r0 << ' ' << r1 << endl;
+	}
+	cout << "New bandwidth: " << diff << endl;
 	return 0;
 }
 
