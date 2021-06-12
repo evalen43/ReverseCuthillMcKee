@@ -8,10 +8,10 @@
 #include <string>
 
 using namespace std;
-vector<double> globalDegree;
+vector<int> globalDegree;
 int ne = 0;
 vector<vector<int>> edges;
-int findIndex(vector<pair<int, double> > a, int x)
+int findIndex(vector<pair<int, int> > a, int x)
 {
 	for (int i = 0; i < a.size(); i++)
 		if (a[i].first == x)
@@ -43,7 +43,7 @@ ostream& operator<<(ostream& out, vector<vector<T>> const& v)
 class ReorderingSSM 
 {
 	private:
-		vector<vector<double> > _matrix;
+		vector<vector<int> > _matrix;
 
 	public:
 	// Constructor and Destructor
@@ -54,7 +54,7 @@ class ReorderingSSM
 		int j1, j2;
 		//int ne1 = edges.size();
 		for (int i = 0; i < num_rows; i++) {
-			vector<double> datai;
+			vector<int> datai;
 
 			for (int j = 0; j < num_rows; j++)
 				datai.push_back(0.0);
@@ -76,32 +76,32 @@ class ReorderingSSM
 	// class methods
 
 	// Function to generate degree of all the nodes
-	vector<double> degreeGenerator()
+	vector<int> degreeGenerator()
 	{
-		vector<double> degrees;
+		vector<int> degrees;
 
 		for (int i = 0; i < _matrix.size(); i++) {
-			double count = 0;
+			int count = 0;
 			for (int j = 0; j < _matrix[0].size(); j++) {
 				count += _matrix[i][j];
 			}
 
 			degrees.push_back(count);
 		}
-
+		//cout << degrees << endl;
 		return degrees;
 	}
 
 	// Implementation of Cuthill-Mckee algorithm
 	vector<int> CuthillMckee()
 	{
-		vector<double> degrees = degreeGenerator();
+		vector<int> degrees = degreeGenerator();
 
 		::globalDegree = degrees;
 
 		queue<int> Q;
 		vector<int> R;
-		vector<pair<int, double> > notVisited;
+		vector<pair<int, int> > notVisited;
 
 		for (int i = 0; i < degrees.size(); i++)
 			notVisited.push_back(make_pair(i, degrees[i]));
@@ -170,7 +170,8 @@ class ReorderingSSM
 
 int main()
 {
-
+	int diff = 0;
+	int band = 0;
 	string filein;
 	int num_rows = 10, ne = 14;
 	int j1 = 0, j2 = 0;
@@ -180,36 +181,30 @@ int main()
 	myfile.open(filein);
 	if (myfile.is_open())
 	{
-		for (int i = 0; i < ne; i++)
+		diff = 0;
+		ne = 0;
+		while (!myfile.eof())
+		//for (int i = 0; i < ne; i++)
 		{
 
 			myfile >> j1 >> j2;
+			band = abs(j1 - j2);
+			if (band > diff) diff = band;
 			vector<int> inc;
 			inc.push_back(j1);
 			inc.push_back(j2);
 			edges.push_back(inc);
+			ne++;
 
 		}
 		myfile.close();
+		cout << "Number of edges: "<<ne<<' ' << "Bandwidth:  " << diff << endl;
 	}
 	else
 	{
 		cout << "File not Found" << endl;
 		return -1;
 	}
-
-
-
-	//vector<vector<double> > matrix;
-
-	//for (int i = 0; i < num_rows; i++) {
-	//	vector<double> datai;
-
-	//	for (int j = 0; j < num_rows; j++)
-	//		datai.push_back(0.0);
-
-	//	matrix.push_back(datai);
-	//}
 
 	// This is the test graph,
 	// check out the above graph photo
@@ -232,15 +227,15 @@ int main()
 	cout << "Original Edges" << endl;
 	cout << edges;
 	cout << "New Edges" << endl;
-	int band = 0;
-	int diff=0;
+
+	diff = 0;
 	for (int i = 0; i < edges.size(); i++) {
 
 		j1 = edges[i][0];
 		j2 = edges[i][1];
 		r0 = r[j1]; r1 = r[j2];
-		diff = abs(r0 - r1);
-		if (diff > band) band = diff;
+		band = abs(r0 - r1);
+		if (band>diff) diff = band;
 		cout << r0 << ' ' << r1 << endl;
 	}
 	cout << "New bandwidth: " << diff << endl;
