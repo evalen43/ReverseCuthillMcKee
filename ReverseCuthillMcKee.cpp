@@ -19,6 +19,14 @@ int findIndex(vector<pair<int, int> > a, int x)
 	return -1;
 }
 
+int findIndex2(vector<pair<int, int> > a, int x)
+{
+	for (int i = 0; i < a.size(); i++)
+		if (a[i].second == x)
+			return i;
+	return -1;
+}
+
 bool compareDegree(int i, int j)
 {
 	return ::globalDegree[i] < ::globalDegree[j];
@@ -44,28 +52,30 @@ class ReorderingSSM
 {
 	private:
 		vector<vector<int> > _matrix;
+		int index1=-1,index2=-1;
 
 	public:
 	// Constructor and Destructor
-	ReorderingSSM(vector<vector<int>> edges,int num_rows)
+	ReorderingSSM(vector<vector<int>> edges,vector<pair<int,int>> nodes,int nn)
 	{
 
 		//_matrix = m;
 		int j1, j2;
 		//int ne1 = edges.size();
-		for (int i = 0; i < num_rows; i++) {
+		for (int i = 0; i < nn; i++) {
 			vector<int> datai;
 
-			for (int j = 0; j < num_rows; j++)
+			for (int j = 0; j < nn; j++)
 				datai.push_back(0.0);
-	
 			_matrix.push_back(datai);
 		}
 		for (int i = 0; i < edges.size(); i++) {
 			j1 = edges[i][0];
 			j2 = edges[i][1];
-			_matrix[j1][j2] = 1;
-			_matrix[j2][j1] = 1;
+			index1 = findIndex2(nodes, j1);
+			index2 = findIndex2(nodes, j2);
+			_matrix[index1][index2] = 1;
+			_matrix[index2][index1] = 1;
 		}
 
 	}
@@ -170,11 +180,12 @@ class ReorderingSSM
 
 int main()
 {
+	vector<pair<int, int>> nodes;
 	int diff = 0;
 	int band = 0;
 	string filein;
-	int num_rows = 10, ne = 14;
-	int j1 = 0, j2 = 0;
+	int ne = 0,nn=0;
+	int j1 = 0, j2 = 0, index1=0,index2=0;
 	std::cout << "Enter File Name!\n";
 	cin >> filein ;
 	ifstream myfile;
@@ -182,23 +193,28 @@ int main()
 	if (myfile.is_open())
 	{
 		diff = 0;
-		ne = 0;
-		while (!myfile.eof())
-		//for (int i = 0; i < ne; i++)
+		myfile >> nn >> ne;
+		for (int i = 0; i < nn; i++) {
+			myfile >> j1;
+			nodes.push_back(make_pair(i,j1));
+		}
+		for(int i=0;i<ne;i++)
 		{
 
 			myfile >> j1 >> j2;
 			band = abs(j1 - j2);
+
 			if (band > diff) diff = band;
 			vector<int> inc;
 			inc.push_back(j1);
 			inc.push_back(j2);
 			edges.push_back(inc);
-			ne++;
+			//ne++;
 
 		}
+
 		myfile.close();
-		cout << "Number of edges: "<<ne<<' ' << "Bandwidth:  " << diff << endl;
+		cout << "Number of edges: "<<ne<<' ' <<"Number of Node: " <<' ' << nn<<" Bandwidth:  " << diff << endl;
 	}
 	else
 	{
@@ -219,7 +235,7 @@ int main()
 	//matrix[8] = { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0 };
 	//matrix[9] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
 
-	ReorderingSSM m(edges,num_rows);
+	ReorderingSSM m(edges,nodes,nn);
 
 	vector<int> r = m.ReverseCuthillMckee();
 	int r0; int r1;
@@ -233,10 +249,12 @@ int main()
 
 		j1 = edges[i][0];
 		j2 = edges[i][1];
-		r0 = r[j1]; r1 = r[j2];
+		index1 = findIndex2(nodes, j1);
+		index2 = findIndex2(nodes, j2);
+		r0 = r[index1]; r1 = r[index2];
 		band = abs(r0 - r1);
 		if (band>diff) diff = band;
-		cout << r0 << ' ' << r1 << endl;
+		cout << nodes[r0].second << ' ' << nodes[r1].second << endl;
 	}
 	cout << "New bandwidth: " << diff << endl;
 	return 0;
