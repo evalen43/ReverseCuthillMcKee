@@ -44,9 +44,15 @@ template <typename T>
 ostream& operator<<(ostream& out, vector<vector<T>> const& v)
 {
 	for (int i = 0; i < v.size(); i++)
-		out << v[i][0] << ' '<<v[i][1]<<endl;
+	{
+		for(int j=0;j<v[0].size();j++)
+			out << v[i][j] << ' ';
+	out << endl;
+	}
 	return out;
 }
+
+
 
 class ReorderingSSM 
 {
@@ -77,6 +83,7 @@ class ReorderingSSM
 			_matrix[index1][index2] = 1;
 			_matrix[index2][index1] = 1;
 		}
+		cout << _matrix<<endl;
 
 	}
 
@@ -85,7 +92,7 @@ class ReorderingSSM
 
 	// class methods
 
-	// Function to generate degree of all the nodes
+	// Function to generate degree for all nodes
 	vector<int> degreeGenerator()
 	{
 		vector<int> degrees;
@@ -98,7 +105,8 @@ class ReorderingSSM
 
 			degrees.push_back(count);
 		}
-		//cout << degrees << endl;
+		cout << "Degress" << endl;
+		cout << degrees << endl;
 		return degrees;
 	}
 
@@ -124,7 +132,7 @@ class ReorderingSSM
 				if (notVisited[i].second < notVisited[minNodeIndex].second)
 					minNodeIndex = i;
 
-			Q.push(notVisited[minNodeIndex].first);
+			Q.push(notVisited[minNodeIndex].first);   0,
 
 			notVisited.erase(notVisited.begin()
 				+ findIndex(notVisited,
@@ -209,7 +217,6 @@ int main()
 			inc.push_back(j1);
 			inc.push_back(j2);
 			edges.push_back(inc);
-			//ne++;
 
 		}
 
